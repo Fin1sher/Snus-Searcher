@@ -1,5 +1,9 @@
+***Voici un exemple du searcher :***
+![image](https://github.com/Fin1sher/Snus-Searcher/assets/170862200/8985d29f-1079-4be6-aac5-5f59e4454d68)
+
+
 ***Comment l'utiliser ? / How to use it ?***
-**PourCommencer / #ToStart:**
+**PourCommencer / ToStart:**
 *Créez un bot sur le site du portail des développeurs : discord.com/developers/applications / Create a bot on the dev portal website: discord.com/developers/applications*
 
 **Ensuite / Afterwards:**
