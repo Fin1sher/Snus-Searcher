@@ -1,0 +1,71 @@
+import io
+import json
+import os
+
+import discord
+import requests
+from discord.ext import commands
+
+my_secret = os.getenv('Token')
+intents = discord.Intents.default()
+intents.typing = False
+intents.presences = False
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+ALLOWED_CHANNEL_ID = Your_channel_id  # ID du canal autorisé
+
+@bot.command()
+async def snusbase(ctx, query):
+    if ctx.channel.id != ALLOWED_CHANNEL_ID:
+        await ctx.send("*La commande `snusbase` ne peut être utilisée que dans https://discord.com/channels/votre_channel*")
+        return
+
+    await ctx.send('**Je rassemble les informations, veuillez patienter 5 à 10 secondes...**')
+
+    snusbase_auth = 'sb0sl0hf866dmrtc4fkeatw7h8wlfo'
+    snusbase_api = 'https://api-experimental.snusbase.com'
+    url = f"{snusbase_api}/data/search"
+    headers = {
+        'Authorization': snusbase_auth,
+        'Content-Type': 'application/json',
+    }
+    body = {
+        'terms': [query],
+        'types': ["email", "username", "lastip", "hash", "password", "name"],
+        'wildcard': False,
+    }
+    response = requests.post(url, headers=headers, json=body)
+
+    if response.status_code == 200:
+        result = response.json()
+        formatted_response = json.dumps(result, indent=2)
+
+        ascii_art = """                                                                                                                         
+  .--.--.                                          ,----..    ,---,                              ,-.                     
+ /  /    '.                                       /   /   \\ ,--.' |                          ,--/ /|                     
+|  :  /`. /      ,---,          ,--,             |   :     :|  |  :                        ,--. :/ |             __  ,-. 
+;  |  |--`   ,-+-. /  |       ,'_ /|   .--.--.   .   |  ;. /:  :  :                        :  : ' /            ,' ,'/ /| 
+|  :  ;_    ,--.'|'   |  .--. |  | :  /  /    '  .   ; /--` :  |  |,--.   ,---.     ,---.  |  '  /      ,---.  '  | |' | 
+ \\  \\    `.|   |  ,"' |,'_ /| :  . | |  :  /`./  ;   | ;    |  :  '   |  /     \\   /     \\ '  |  :     /     \\ |  |   ,' 
+  `----.   \\   | /  | ||  ' | |  . . |  :  ;_    |   : |    |  |   /' : /    /  | /    / ' |  |   \\   /    /  |'  :  /   
+  __ \\  \\  |   | |  | ||  | ' |  | |  \\  \\    `. .   | '___ '  :  | | |.    ' / |.    ' /  '  : |. \\ .    ' / ||  | '    
+ /  /`--'  /   | |  |/ :  | : ;  ; |   `----.   \'   ; : .'||  |  ' | :'   ;   /|'   ; :__ |  | ' \\ \'   ;   /|;  : |    
+'--'.     /|   | |--'  '  :  `--'   \\ /  /`--'  /'   | '/  :|  :  :_:,''   |  / |'   | '.'|'  : |--' '   |  / ||  , ;    
+  `--'---' |   |/      :  ,      .-./'--'.     / |   :    / |  | ,'    |   :    ||   :    :;  |,'    |   :    | ---'     
+           '---'        `--`----'      `--'---'   \\   \\ .'  `--''       \\   \\  /  \\   \\  / '--'       \\   \\  /           
+                                                   `---`     Your_name_here    `----'    `----'              `----'                      
+"""
+        formatted_response = ascii_art + '\n' + formatted_response
+
+        output = io.BytesIO(formatted_response.encode())
+        file = discord.File(output, filename="snuschecker.txt")
+        await ctx.send(file=file, content="Voici les résultats de la recherche :")
+
+    else:
+        await ctx.send(f'Aucun fichier trouvé avec le nom : {query}')
+
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user.name}')
+
+bot.run(my_secret)
